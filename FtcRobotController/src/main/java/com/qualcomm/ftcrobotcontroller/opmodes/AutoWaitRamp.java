@@ -13,14 +13,14 @@ public class AutoWaitRamp extends OpMode {
   private static double ClicksPerRev = MotorClicksPerRev * GearRatio;
   private static double FeetPerWheelRev = 1.0;
   private static double FeetPerSpin = 4.2;
-  private static double FeetPerCircle = 3.14159 * 8;
+  private static double FeetPerCircle = 22.9;
 
   private static double InsideRatio = 5.0/8.0; // 4' outer-radius turn.
 
-  private static double Speed = 0.6;
+  private static double Speed = 0.4;
   private static double InnerSpeed = Speed * InsideRatio;
 
-  private static double SecondsPerFoot = 0.4 / Speed;
+  private static double SecondsPerFoot = 0.5 / Speed;
 
   private enum State {
     Begin,
@@ -31,12 +31,12 @@ public class AutoWaitRamp extends OpMode {
     Dock
   }
 
-  private static double DepartDist   =  1.0;
-  private static double AlignDist    =  FeetPerCircle / 8; // 45 degrees
-  private static double ApproachDist =  3.0;
+  private static double DepartDist   = 3.8;
+  private static double AlignDist    = FeetPerCircle / 8; // 45 degrees
+  private static double ApproachDist = 1.5;
 
   private static double DepartDur   =  DepartDist   * SecondsPerFoot;
-  private static double RestDur     =  20.0; // seconds
+  private static double RestDur     =  10.0; // seconds
   private static double AlignDur    =  AlignDist    * SecondsPerFoot;
   private static double ApproachDur =  ApproachDist * SecondsPerFoot;
 

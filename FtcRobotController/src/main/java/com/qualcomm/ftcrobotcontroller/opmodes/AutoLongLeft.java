@@ -13,14 +13,14 @@ public class AutoLongLeft extends OpMode {
   private static double ClicksPerRev = MotorClicksPerRev * GearRatio;
   private static double FeetPerWheelRev = 1.0;
   private static double FeetPerSpin = 4.2;
-  private static double FeetPerCircle = 3.14159 * 8;
+  private static double FeetPerCircle = 22.9;
 
   private static double InsideRatio = 5.0/8.0; // 4' outer-radius turn.
 
-  private static double Speed = 0.6;
+  private static double Speed = 0.4;
   private static double InnerSpeed = Speed * InsideRatio;
 
-  private static double SecondsPerFoot = 0.4 / Speed;
+  private static double SecondsPerFoot = 0.5 / Speed;
 
   private enum State {
     Begin,
@@ -34,9 +34,9 @@ public class AutoLongLeft extends OpMode {
 
   private static double DepartDist   =  0.0;
   private static double Turn1Dist    =  FeetPerCircle / 8; // 45 degrees
-  private static double StraightDist =  5.2;
+  private static double StraightDist =  4.7;
   private static double Turn2Dist    =  FeetPerCircle / 8; // 45 degrees
-  private static double ApproachDist =  1.2;
+  private static double ApproachDist =  1.4;
 
   private static double DepartDur   =  DepartDist   * SecondsPerFoot;
   private static double Turn1Dur    =  Turn1Dist    * SecondsPerFoot;

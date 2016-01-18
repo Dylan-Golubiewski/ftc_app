@@ -13,14 +13,14 @@ public class AutoRampBack extends OpMode {
   private static double ClicksPerRev = MotorClicksPerRev * GearRatio;
   private static double FeetPerWheelRev = 1.0;
   private static double FeetPerSpin = 4.2;
-  private static double FeetPerCircle = 3.14159 * 8;
+  private static double FeetPerCircle = 22.9;
 
   private static double InsideRatio = 5.0/8.0; // 4' outer-radius turn.
 
-  private static double Speed = 0.6;
+  private static double Speed = 0.4;
   private static double InnerSpeed = Speed * InsideRatio;
 
-  private static double SecondsPerFoot = 0.4 / Speed;
+  private static double SecondsPerFoot = 0.5 / Speed;
 
   private enum State {
     Begin,
