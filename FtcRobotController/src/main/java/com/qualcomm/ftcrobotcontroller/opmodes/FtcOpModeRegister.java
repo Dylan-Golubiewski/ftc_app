@@ -34,7 +34,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 
-// Register Op Modes
+/**
+ * Register Op Modes
+ */
 public class FtcOpModeRegister implements OpModeRegister {
 
   /**
@@ -44,14 +46,12 @@ public class FtcOpModeRegister implements OpModeRegister {
    * @param manager op mode manager
    */
   public void register(OpModeManager manager) {
-
-    // Register your op modes here.
-    // The first parameter is the name of the op mode.
-    // The second parameter is the op mode class property.
-    //
-    // If two or more op modes are registered with the same name,
-    // the app will display an error.
-
     manager.register("NullOp", NullOp.class);
+    manager.register("TeleOp", TeleOp.class);
+    manager.register("AutoLongLeft",  AutoLongLeft.class);
+    manager.register("AutoShortLeft", AutoShortLeft.class);
+    manager.register("AutoRamp",      AutoRamp.class);
+    manager.register("AutoRampBack",  AutoRampBack.class);
+    manager.register("AutoWaitRamp",  AutoWaitRamp.class);
   }
 } // FtcOpModeRegister
