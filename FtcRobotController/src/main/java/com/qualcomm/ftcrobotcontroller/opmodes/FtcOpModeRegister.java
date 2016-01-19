@@ -53,5 +53,6 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("AutoRamp",      AutoRamp.class);
     manager.register("AutoRampBack",  AutoRampBack.class);
     manager.register("AutoWaitRamp",  AutoWaitRamp.class);
+    manager.register("AutoWaitRampShort", AutoWaitRampShort.class);
   }
 } // FtcOpModeRegister
