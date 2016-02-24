@@ -8,17 +8,9 @@ import com.qualcomm.robotcore.util.Range;
 
 public class AutoRamp extends OpMode {
 
-  private static int MotorClicksPerRev = 1120;
-  private static double GearRatio = 1;
-  private static double ClicksPerRev = MotorClicksPerRev * GearRatio;
-  private static double FeetPerWheelRev = 1.0;
-  private static double FeetPerSpin = 4.2;
-  private static double FeetPerCircle = 22.9;
-
-  private static double InsideRatio = 5.0/8.0; // 4' outer-radius turn.
 
   private static double Speed = 0.4;
-  private static double InnerSpeed = Speed * InsideRatio;
+  private static double InnerSpeed = Speed * ConfigValues.InsideRatio;
 
   private static double SecondsPerFoot = 0.5 / Speed;
 
@@ -32,7 +24,8 @@ public class AutoRamp extends OpMode {
   }
 
   private static double DepartDist   =  3.0;
-  private static double AlignDist    =  FeetPerCircle / 8; // 45 degrees
+  private static double AlignDist    =  ConfigValues.FeetPerCircle / 8; // 45
+  // degrees
   private static double ApproachDist =  5.8;
   private static double RampDist     =  0.0;
 
@@ -80,7 +73,8 @@ public class AutoRamp extends OpMode {
   }
 
   private static int Clicks(double ft)
-    { return (int)(ft / FeetPerWheelRev * ClicksPerRev + 0.5); }
+    { return (int)(ft / ConfigValues.FeetPerWheelRev * ConfigValues.ClicksPerRev
+            + 0.5); }
 
   private void setTarget(double leftFt, double rightFt) {
     int left  = Clicks(leftFt);
@@ -97,7 +91,7 @@ public class AutoRamp extends OpMode {
   }
 
   private void turnLeft(double ft) {
-    leftPosFt  += ft * InsideRatio;
+    leftPosFt  += ft * ConfigValues.InsideRatio;
     rightPosFt += ft;
     setPower(InnerSpeed, Speed);
     setTarget(leftPosFt, rightPosFt);
@@ -105,7 +99,7 @@ public class AutoRamp extends OpMode {
 
   private void turnRight(double ft) {
     leftPosFt  += ft;
-    rightPosFt += ft * InsideRatio;
+    rightPosFt += ft * ConfigValues.InsideRatio;
     setPower(Speed, InnerSpeed);
     setTarget(leftPosFt, rightPosFt);
   }

@@ -6,53 +6,44 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-public class AutoRampBack extends OpMode {
+public class AutoShortRight extends OpMode {
+
 
 
   private static double Speed = 0.4;
   private static double InnerSpeed = Speed * ConfigValues.InsideRatio;
 
-  private static double SecondsPerFoot = 0.4 / Speed;
+  private static double SecondsPerFoot = 0.5 / Speed;
 
   private enum State {
     Begin,
     Depart,
-    Spin,
-    Align,
+    Turn1,
+    Straight,
+    Turn2,
     Approach,
-    Ramp,
-    Dock,
+    Dock
   }
 
-/*
-  private static double DepartDist   = 6.5;
-  private static double DepartDist   = 6.5;
-  private static double SpinRev      = 0.5;
-  private static double SpinDist     = SpinRev * FeetPerSpin;
-  private static double AlignDist    = FeetPerCircle / 8;
-  private static double ApproachDist = 0.0;
-  private static double RampDist     = 0.0;
-*/
-
-  private static double DepartDist   = ConfigValues.FeetPerCircle;
-  private static double SpinRev      = 1.0;
-  private static double SpinDist     = SpinRev * ConfigValues.FeetPerSpin;
-  private static double AlignDist    = 0.0;
-  private static double ApproachDist = 0.0;
-  private static double RampDist     = 0.0;
-
+  private static double DepartDist   =  2.0;
+  private static double Turn1Dist    =  ConfigValues.FeetPerCircle / 8; // 45
+  // degrees
+  private static double StraightDist =  2.0;
+  private static double Turn2Dist    =  ConfigValues.FeetPerCircle / 8; // 45
+  // degrees
+  private static double ApproachDist =  0.3;
 
   private static double DepartDur   =  DepartDist   * SecondsPerFoot;
-  private static double SpinDur     =  SpinDist     * SecondsPerFoot;
-  private static double AlignDur    =  AlignDist    * SecondsPerFoot;
+  private static double Turn1Dur    =  Turn1Dist    * SecondsPerFoot;
+  private static double StraightDur =  StraightDist * SecondsPerFoot;
+  private static double Turn2Dur    =  Turn2Dist    * SecondsPerFoot;
   private static double ApproachDur =  ApproachDist * SecondsPerFoot;
-  private static double RampDur     =  RampDist     * SecondsPerFoot;
 
   private static double DepartEnd   = DepartDur;
-  private static double SpinEnd     = DepartEnd   + SpinDur;
-  private static double AlignEnd    = SpinEnd     + AlignDur;
-  private static double ApproachEnd = AlignEnd    + ApproachDur;
-  private static double RampEnd     = ApproachEnd + RampDur;
+  private static double Turn1End    = DepartEnd   + Turn1Dur;
+  private static double StraightEnd = Turn1End    + StraightDur;
+  private static double Turn2End    = StraightEnd + Turn2Dur;
+  private static double ApproachEnd = Turn2End    + ApproachDur;
 
   private ElapsedTime timer = new ElapsedTime();
 
@@ -77,7 +68,7 @@ public class AutoRampBack extends OpMode {
     rightWheel.setPower(rightPower);
   }
 
-  private void setPower(double left, double right) {
+  private void setPower(double right, double left) {
     setLeftPower(left);
     setRightPower(right);
   }
@@ -91,7 +82,7 @@ public class AutoRampBack extends OpMode {
     { return (int)(ft / ConfigValues.FeetPerWheelRev * ConfigValues.ClicksPerRev
             + 0.5); }
 
-  private void setTarget(double leftFt, double rightFt) {
+  private void setTarget(double rightFt, double leftFt) {
     int left  = Clicks(leftFt);
     int right = Clicks(rightFt);
     leftWheel.setTargetPosition(left);
@@ -119,16 +110,7 @@ public class AutoRampBack extends OpMode {
     setTarget(leftPosFt, rightPosFt);
   }
 
-  private void spin(double rev) {
-    double d = rev * ConfigValues.FeetPerSpin;
-    leftPosFt  += d;
-    rightPosFt -= d;
-    setPower(Speed, Speed);
-    //setPower(0, 0);
-    setTarget(leftPosFt, rightPosFt);
-  }
-
-  public AutoRampBack() { }
+  public AutoShortRight() { }
 
   @Override
   public void init() {
@@ -155,37 +137,37 @@ public class AutoRampBack extends OpMode {
     switch (state) {
       case Begin:
         timer.reset();
-        turnLeft(DepartDist);
-        //move(-DepartDist);
+        move(DepartDist);
         state = State.Depart;
         // fall thru
       case Depart:
         if (timer.time() < DepartEnd)
           break;
-        spin(SpinRev);
-        state = State.Spin;
+        turnLeft(Turn1Dist);
+        state = State.Turn1;
         // fall thru
-      case Spin:
-        if (timer.time() < SpinEnd)
+      case Turn1:
+        if (timer.time() < Turn1End)
           break;
-        turnLeft(AlignDist);
-        state = State.Align;
+        move(StraightDist);
+        state = State.Straight;
         // fall thru
-      case Align:
-        if (timer.time() < AlignEnd)
+      case Straight:
+        if (timer.time() < StraightEnd)
           break;
-        move(ApproachDist);
+        turnLeft(Turn2Dist);
+        state = State.Turn2;
+        // fall thru
+      case Turn2:
+        if (timer.time() < Turn2End)
+          break;
+            move(ApproachDist);
         state = State.Approach;
         // fall thru
       case Approach:
         if (timer.time() < ApproachEnd)
           break;
-        move(RampDist);
-        state = State.Ramp;
-        // fall thru
-      case Ramp:
-        if (timer.time() < RampEnd)
-          break;
+        setPower(0.0, 0.0);
         state = State.Dock;
         // fall thru
       case Dock:
@@ -200,4 +182,4 @@ public class AutoRampBack extends OpMode {
   @Override
   public void stop() { setPower(0.0, 0.0); }
 
-} // AutoRampBack
+} // AutoShortLeft
