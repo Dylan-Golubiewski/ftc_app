@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class ArmTester extends OpMode {
-  private static double UpSpeed = 0.15;
-  private static double DownSpeed = 0.15;
+  private static double UpSpeed = 0.1;
+  private static double DownSpeed = 0.1;
 
   private DcMotor shoulderMotor;
   private DcMotor elbowMotor;
