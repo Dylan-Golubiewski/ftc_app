@@ -38,8 +38,8 @@ public class Repark extends OpMode {
     shoulderMotor = hardwareMap.dcMotor.get("shoulderMotor");
     elbowMotor = hardwareMap.dcMotor.get("elbowMotor");
 
-    shoulderMotor.setDirection(DcMotor.Direction.FORWARD);
-    elbowMotor.setDirection(DcMotor.Direction.FORWARD);
+    shoulderMotor.setDirection(DcMotor.Direction.REVERSE);
+    elbowMotor.setDirection(DcMotor.Direction.REVERSE);
 
     setMotorMode(DcMotorController.RunMode.RESET_ENCODERS);
   }

@@ -5,16 +5,12 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.Range;
 
 public class Arm {
-  private static double Speed = 0.3;
-
-  public static double SecondsPerRev = 0.5 / Speed;
-
   private static double GearRatio = 12.0;
 
   public static double MinShoulder = -33.0 / 360; // angled back
   public static double MaxShoulder = +80.0 / 360; // almost straight forward
 
-  public static double MinElbow = -10.0 / 360;  // slightly up
+  public static double MinElbow = -35.0 / 360;  // slightly up
   public static double MaxElbow = +90.0 / 360;  // straight down
 
   private static double MinAngle = 26.0 / 360;
@@ -35,6 +31,11 @@ public class Arm {
                                         //  0.0 (up)
 					//  0.25 (forward)
   private double elbowPosRev = 0.0;     //  0.0 (level) to 0.25 (down)
+
+  private static double speed = 0.3;
+  private boolean noLimits = false;
+
+  public double secondsPerRev() { return 0.5 / speed; }
 
   private void setElbowPower(double pwr) {
     elbowPower = Range.clip(pwr,  -1, 1);
@@ -60,31 +61,37 @@ public class Arm {
     { return (int)(rev * GearRatio * ConfigValues.ClicksPerRev + 0.5); }
 
   public double moveShoulder(double rev) {
-    double pos = Range.clip(shoulderPosRev + rev, MinShoulder, MaxShoulder);
-    double angle = pos - elbowPosRev + 0.25;
-    if (angle < MinAngle)
-      pos = MinAngle + elbowPosRev - 0.25;
-    else if (angle > MaxAngle)
-      pos = MaxAngle + elbowPosRev - 0.25;
+    double pos = shoulderPosRev + rev;
+    if (!noLimits) {
+      pos = Range.clip(pos, MinShoulder, MaxShoulder);
+      double angle = pos - elbowPosRev + 0.25;
+      if (angle < MinAngle)
+        pos = MinAngle + elbowPosRev - 0.25;
+      else if (angle > MaxAngle)
+        pos = MaxAngle + elbowPosRev - 0.25;
+    }
     rev = pos - shoulderPosRev;
     shoulderPosRev = pos;
     int shoulder = Clicks(shoulderPosRev - ParkShoulder);
     shoulderMotor.setTargetPosition(shoulder);
-    return rev * SecondsPerRev;
+    return rev * secondsPerRev();
   }
 
   public double moveElbow(double rev) {
-    double pos = Range.clip(elbowPosRev + rev, MinElbow, MaxElbow);
-    double angle = shoulderPosRev - pos + 0.25;
-    if (angle < MinAngle)
-      pos = shoulderPosRev - MinAngle + 0.25;
-    else if (angle > MaxAngle)
-      pos = shoulderPosRev - MaxAngle + 0.25;
+    double pos = elbowPosRev + rev;
+    if (!noLimits) {
+      pos = Range.clip(pos, MinElbow, MaxElbow);
+      double angle = shoulderPosRev - pos + 0.25;
+      if (angle < MinAngle)
+        pos = shoulderPosRev - MinAngle + 0.25;
+      else if (angle > MaxAngle)
+        pos = shoulderPosRev - MaxAngle + 0.25;
+    }
     rev = pos - elbowPosRev;
     elbowPosRev = pos;
     int elbow = Clicks(elbowPosRev - ParkElbow);
     elbowMotor.setTargetPosition(elbow);
-    return rev * SecondsPerRev;
+    return rev * secondsPerRev();
   }
 
   public double setShoulder(double rev)
@@ -97,28 +104,42 @@ public class Arm {
 
   public double getElbow() { return elbowPosRev; }
 
+  public void unlimited() {
+    noLimits = true;
+    speed = 0.2;
+  }
+
   public Arm() { }
 
   public void init(DcMotor shoulder, DcMotor elbow) {
     shoulderMotor = shoulder;
     elbowMotor = elbow;
 
-    shoulderMotor.setDirection(DcMotor.Direction.FORWARD);
-    elbowMotor.setDirection(DcMotor.Direction.FORWARD);
+    shoulderMotor.setDirection(DcMotor.Direction.REVERSE);
+    elbowMotor.setDirection(DcMotor.Direction.REVERSE);
 
     setMotorMode(DcMotorController.RunMode.RESET_ENCODERS);
   }
 
   public void start() {
-    setPower(Speed, Speed);
+    setPower(speed, speed);
     setMotorMode(DcMotorController.RunMode.RUN_TO_POSITION);
-    shoulderPosRev = 0.0;
-    elbowPosRev = 0.0;
+    shoulderPosRev = ParkShoulder;
+    elbowPosRev = ParkElbow;
   }
 
-  public void park() { setShoulder(ParkShoulder); setElbow(ParkElbow); }
+  public void park() {
+    if (noLimits)
+      return;
+    setShoulder(ParkShoulder);
+    setElbow(ParkElbow);
+  }
 
-  public void home() { setShoulder(HomeShoulder); setElbow(HomeElbow); }
+  public void home() {
+    if (noLimits)
+      return;
+    setShoulder(HomeShoulder);
+    setElbow(HomeElbow); }
 
   public void stop() { setPower(0.0, 0.0); }
 
