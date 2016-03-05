@@ -2,6 +2,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.Range;
 
 public class Arm {
@@ -21,8 +23,12 @@ public class Arm {
   public static double HomeShoulder = 0.0 / 360; // slightly forward
   public static double HomeElbow = 0.0 / 360; // slightly down
 
+  public static double ClawOpenedPos = 0.0;
+  public static double ClawClosedPos = 0.5;
+
   private DcMotor shoulderMotor;
   private DcMotor elbowMotor;
+  private Servo clawServo;
 
   private double shoulderPower = 0.0;
   private double elbowPower = 0.0;
@@ -109,14 +115,19 @@ public class Arm {
     speed = 0.2;
   }
 
+  public void openClaw()  { clawServo.setPosition(ClawOpenedPos); }
+  public void closeClaw() { clawServo.setPosition(ClawClosedPos); }
+
   public Arm() { }
 
-  public void init(DcMotor shoulder, DcMotor elbow) {
+  public void init(DcMotor shoulder, DcMotor elbow, Servo claw) {
     shoulderMotor = shoulder;
     elbowMotor = elbow;
+    clawServo = claw;
 
     shoulderMotor.setDirection(DcMotor.Direction.REVERSE);
     elbowMotor.setDirection(DcMotor.Direction.REVERSE);
+    clawServo.setDirection(Servo.Direction.FORWARD);
 
     setMotorMode(DcMotorController.RunMode.RESET_ENCODERS);
   }
@@ -131,15 +142,19 @@ public class Arm {
   public void park() {
     if (noLimits)
       return;
+    closeClaw();
     setShoulder(ParkShoulder);
     setElbow(ParkElbow);
+
   }
 
   public void home() {
     if (noLimits)
       return;
+    closeClaw();
     setShoulder(HomeShoulder);
-    setElbow(HomeElbow); }
+    setElbow(HomeElbow);
+  }
 
   public void stop() { setPower(0.0, 0.0); }
 

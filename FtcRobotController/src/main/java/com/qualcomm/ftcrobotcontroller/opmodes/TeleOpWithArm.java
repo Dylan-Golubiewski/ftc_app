@@ -2,6 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 public class TeleOpWithArm extends OpMode {
@@ -12,6 +13,7 @@ public class TeleOpWithArm extends OpMode {
   private DcMotor motorRightBack;
   private DcMotor shoulderMotor;
   private DcMotor elbowMotor;
+  private Servo  clawServo;
 
   private Wheels wheels;
   private Arm arm;
@@ -29,9 +31,10 @@ public class TeleOpWithArm extends OpMode {
     motorRightBack  = hardwareMap.dcMotor.get("BackRightDrive");
     shoulderMotor   = hardwareMap.dcMotor.get("shoulderMotor");
     elbowMotor      = hardwareMap.dcMotor.get("elbowMotor");
+    clawServo       = hardwareMap.servo.get("ClawServo");
 
     wheels.init(motorLeftFront, motorRightFront, motorLeftBack, motorRightBack);
-    arm.init(shoulderMotor, elbowMotor);
+    arm.init(shoulderMotor, elbowMotor, clawServo);
   }
 
 
@@ -65,6 +68,15 @@ public class TeleOpWithArm extends OpMode {
 
     arm.moveShoulder(left * Factor);
     arm.moveElbow(right * Factor);
+
+    boolean openClaw  = gamepad2.left_bumper;
+    boolean closeClaw = gamepad2.right_bumper;
+    if (openClaw != closeClaw) {
+      if (openClaw)
+        arm.openClaw();
+      else
+	    arm.closeClaw();
+    }
 
     telemetry.addData("Text", "*** Robot Data***");
     telemetry.addData("shoulder", String.format("%.2f", arm.getShoulder() * 360));

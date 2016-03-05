@@ -47,7 +47,6 @@ public class FtcOpModeRegister implements OpModeRegister {
    */
   public void register(OpModeManager manager) {
     manager.register("NullOp", NullOp.class);
-    manager.register("TeleOp_Bot", TeleOp_Bot.class);
 
     manager.register("AutoLongRed",  AutoLongLeft.class);
     manager.register("AutoShortRed", AutoShortLeft.class);
@@ -58,10 +57,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("AutoWaitRampBlue",  AutoWaitRampRight.class);
 
     manager.register("Calibrate",  AutoRampBack.class);
-   // manager.register("ArmTester",   ArmTester.class);
-   // manager.register("Tjg", Tjg.class);
     manager.register("Repark", Repark.class);
-    manager.register("ArmTeleOp", ArmTeleOp.class);
     manager.register("TeleOpWithArm", TeleOpWithArm.class);
   }
 } // FtcOpModeRegister
