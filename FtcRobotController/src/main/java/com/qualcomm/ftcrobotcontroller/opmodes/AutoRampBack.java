@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.Range;
 
 public class AutoRampBack extends OpMode {
 
-
   private static double Speed = 0.4;
   private static double InnerSpeed = Speed * ConfigValues.InsideRatio;
 
@@ -41,7 +40,6 @@ public class AutoRampBack extends OpMode {
   private static double ApproachDist = 0.0;
   private static double RampDist     = 0.0;
 
-
   private static double DepartDur   =  DepartDist   * SecondsPerFoot;
   private static double SpinDur     =  SpinDist     * SecondsPerFoot;
   private static double AlignDur    =  AlignDist    * SecondsPerFoot;
@@ -56,8 +54,10 @@ public class AutoRampBack extends OpMode {
 
   private ElapsedTime timer = new ElapsedTime();
 
-  private DcMotor rightWheel;
-  private DcMotor leftWheel;
+  private DcMotor frontLeftWheel;
+  private DcMotor frontRightWheel;
+  private DcMotor rearLeftWheel;
+  private DcMotor rearRightWheel;
 
   private State state = State.Begin;
 
@@ -69,12 +69,14 @@ public class AutoRampBack extends OpMode {
 
   private void setLeftPower(double pwr) {
     leftPower = Range.clip(pwr,  -1, 1);
-    leftWheel.setPower(leftPower);
+    frontLeftWheel.setPower(leftPower);
+    rearLeftWheel.setPower(leftPower);
   }
 
   private void setRightPower(double pwr) {
     rightPower = Range.clip(pwr,  -1, 1);
-    rightWheel.setPower(rightPower);
+    frontRightWheel.setPower(rightPower);
+    rearRightWheel.setPower(rightPower);
   }
 
   private void setPower(double left, double right) {
@@ -83,8 +85,10 @@ public class AutoRampBack extends OpMode {
   }
 
   private void setWheelMode(DcMotorController.RunMode mode) {
-    rightWheel.setMode(mode);
-    leftWheel.setMode(mode);
+    frontRightWheel.setMode(mode);
+    frontLeftWheel.setMode(mode);
+    rearRightWheel.setMode(mode);
+    rearLeftWheel.setMode(mode);
   }
 
   private static int Clicks(double ft)
@@ -94,8 +98,10 @@ public class AutoRampBack extends OpMode {
   private void setTarget(double leftFt, double rightFt) {
     int left  = Clicks(leftFt);
     int right = Clicks(rightFt);
-    leftWheel.setTargetPosition(left);
-    rightWheel.setTargetPosition(right);
+    frontLeftWheel.setTargetPosition(left);
+    frontRightWheel.setTargetPosition(right);
+    rearLeftWheel.setTargetPosition(left);
+    rearRightWheel.setTargetPosition(right);
   }
 
   private void move(double ft) {
@@ -124,7 +130,6 @@ public class AutoRampBack extends OpMode {
     leftPosFt  += d;
     rightPosFt -= d;
     setPower(Speed, Speed);
-    //setPower(0, 0);
     setTarget(leftPosFt, rightPosFt);
   }
 
@@ -132,11 +137,15 @@ public class AutoRampBack extends OpMode {
 
   @Override
   public void init() {
-    rightWheel = hardwareMap.dcMotor.get("wheel_right");
-    leftWheel  = hardwareMap.dcMotor.get("wheel_left");
+    frontRightWheel = hardwareMap.dcMotor.get("FrontRightDrive");
+    frontLeftWheel  = hardwareMap.dcMotor.get("FrontLeftDrive");
+    rearRightWheel = hardwareMap.dcMotor.get("BackRightDrive");
+    rearLeftWheel  = hardwareMap.dcMotor.get("BackLeftDrive");
 
-    rightWheel.setDirection(DcMotor.Direction.REVERSE);
-    leftWheel.setDirection(DcMotor.Direction.FORWARD);
+    frontLeftWheel.setDirection(DcMotor.Direction.FORWARD);
+    rearLeftWheel.setDirection(DcMotor.Direction.FORWARD);
+    frontRightWheel.setDirection(DcMotor.Direction.REVERSE);
+    rearRightWheel.setDirection(DcMotor.Direction.REVERSE);
 
     setWheelMode(DcMotorController.RunMode.RESET_ENCODERS);
   }

@@ -45,8 +45,10 @@ public class AutoLongLeft extends OpMode {
 
   private ElapsedTime timer = new ElapsedTime();
 
-  private DcMotor rightWheel;
-  private DcMotor leftWheel;
+  private DcMotor frontLeftWheel;
+  private DcMotor frontRightWheel;
+  private DcMotor rearLeftWheel;
+  private DcMotor rearRightWheel;
 
   private State state = State.Begin;
 
@@ -58,12 +60,14 @@ public class AutoLongLeft extends OpMode {
 
   private void setLeftPower(double pwr) {
     leftPower = Range.clip(pwr,  -1, 1);
-    leftWheel.setPower(leftPower);
+    frontLeftWheel.setPower(leftPower);
+    rearLeftWheel.setPower(leftPower);
   }
 
   private void setRightPower(double pwr) {
     rightPower = Range.clip(pwr,  -1, 1);
-    rightWheel.setPower(rightPower);
+    frontRightWheel.setPower(rightPower);
+    rearRightWheel.setPower(rightPower);
   }
 
   private void setPower(double left, double right) {
@@ -72,8 +76,10 @@ public class AutoLongLeft extends OpMode {
   }
 
   private void setWheelMode(DcMotorController.RunMode mode) {
-    rightWheel.setMode(mode);
-    leftWheel.setMode(mode);
+    frontRightWheel.setMode(mode);
+    frontLeftWheel.setMode(mode);
+    rearRightWheel.setMode(mode);
+    rearLeftWheel.setMode(mode);
   }
 
   private static int Clicks(double ft)
@@ -83,8 +89,10 @@ public class AutoLongLeft extends OpMode {
   private void setTarget(double leftFt, double rightFt) {
     int left  = Clicks(leftFt);
     int right = Clicks(rightFt);
-    leftWheel.setTargetPosition(left);
-    rightWheel.setTargetPosition(right);
+    frontLeftWheel.setTargetPosition(left);
+    frontRightWheel.setTargetPosition(right);
+    rearLeftWheel.setTargetPosition(left);
+    rearRightWheel.setTargetPosition(right);
   }
 
   private void move(double ft) {
@@ -112,11 +120,15 @@ public class AutoLongLeft extends OpMode {
 
   @Override
   public void init() {
-    rightWheel = hardwareMap.dcMotor.get("wheel_right");
-    leftWheel  = hardwareMap.dcMotor.get("wheel_left");
+    frontLeftWheel  = hardwareMap.dcMotor.get("FrontLeftDrive");
+    frontRightWheel = hardwareMap.dcMotor.get("FrontRightDrive");
+    rearLeftWheel  = hardwareMap.dcMotor.get("BackLeftDrive");
+    rearRightWheel = hardwareMap.dcMotor.get("BackRightDrive");
 
-    rightWheel.setDirection(DcMotor.Direction.REVERSE);
-    leftWheel.setDirection(DcMotor.Direction.FORWARD);
+    frontLeftWheel.setDirection(DcMotor.Direction.FORWARD);
+    rearLeftWheel.setDirection(DcMotor.Direction.FORWARD);
+    frontRightWheel.setDirection(DcMotor.Direction.REVERSE);
+    rearRightWheel.setDirection(DcMotor.Direction.REVERSE);
 
     setWheelMode(DcMotorController.RunMode.RESET_ENCODERS);
   }
