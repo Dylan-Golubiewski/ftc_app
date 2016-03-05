@@ -13,6 +13,7 @@ public class TeleOpWithArm extends OpMode {
   private DcMotor motorRightBack;
   private DcMotor shoulderMotor;
   private DcMotor elbowMotor;
+  private DcMotor turretMotor;
   private Servo  clawServo;
 
   private Wheels wheels;
@@ -31,10 +32,11 @@ public class TeleOpWithArm extends OpMode {
     motorRightBack  = hardwareMap.dcMotor.get("BackRightDrive");
     shoulderMotor   = hardwareMap.dcMotor.get("shoulderMotor");
     elbowMotor      = hardwareMap.dcMotor.get("elbowMotor");
+    turretMotor     = hardwareMap.dcMotor.get("turretMotor");
     clawServo       = hardwareMap.servo.get("ClawServo");
 
     wheels.init(motorLeftFront, motorRightFront, motorLeftBack, motorRightBack);
-    arm.init(shoulderMotor, elbowMotor, clawServo);
+    arm.init(shoulderMotor, elbowMotor, turretMotor, clawServo);
   }
 
 
@@ -64,10 +66,12 @@ public class TeleOpWithArm extends OpMode {
 
     double left  = -gamepad2.left_stick_y;
     double right = -gamepad2.right_stick_y;
+    double spin  = +gamepad2.right_stick_x;
     double Factor = 0.5 / 360.0;
 
     arm.moveShoulder(left * Factor);
     arm.moveElbow(right * Factor);
+    arm.moveTurret(spin * Factor);
 
     boolean openClaw  = gamepad2.left_bumper;
     boolean closeClaw = gamepad2.right_bumper;
@@ -75,12 +79,13 @@ public class TeleOpWithArm extends OpMode {
       if (openClaw)
         arm.openClaw();
       else
-	    arm.closeClaw();
+	arm.closeClaw();
     }
 
     telemetry.addData("Text", "*** Robot Data***");
     telemetry.addData("shoulder", String.format("%.2f", arm.getShoulder() * 360));
     telemetry.addData("elbow", String.format("%.2f", arm.getElbow() * 360));
+    telemetry.addData("turret", String.format("%.2f", arm.getTurret() * 360));
   }
 
   @Override
