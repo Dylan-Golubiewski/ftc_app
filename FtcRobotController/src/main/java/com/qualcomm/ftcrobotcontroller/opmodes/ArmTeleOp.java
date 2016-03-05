@@ -34,6 +34,10 @@ public class ArmTeleOp extends OpMode {
     if (gamepad1.y) {
       arm.unlimited();
       return;
+      }
+    if (gamepad2.y) {
+      arm.unlimited();
+      return;
     }
     double left  = -gamepad1.left_stick_y;
     double right = -gamepad1.right_stick_y;

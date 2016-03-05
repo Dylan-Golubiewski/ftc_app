@@ -17,7 +17,7 @@ public class Arm {
   private static double MaxAngle = 145.0 / 360;
 
   public static double ParkShoulder = MinShoulder;
-  public static double ParkElbow = 20.0 / 360; // slightly down
+  public static double ParkElbow = 16.0 / 360; // slightly down
   public static double HomeShoulder = 0.0 / 360; // slightly forward
   public static double HomeElbow = 0.0 / 360; // slightly down
 
@@ -27,7 +27,7 @@ public class Arm {
   private double shoulderPower = 0.0;
   private double elbowPower = 0.0;
 
-  private double shoulderPosRev = 0.0;  // -0.125 (parked)
+  private double shoulderPosRev = 0.0;  // -0.125 (parked\
                                         //  0.0 (up)
 					//  0.25 (forward)
   private double elbowPosRev = 0.0;     //  0.0 (level) to 0.25 (down)
