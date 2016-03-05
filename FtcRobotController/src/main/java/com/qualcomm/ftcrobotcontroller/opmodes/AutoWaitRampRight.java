@@ -28,7 +28,7 @@ public class AutoWaitRampRight extends OpMode {
   private static double ApproachDist = 1.5;
 
   private static double DepartDur   =  DepartDist   * SecondsPerFoot;
-  private static double RestDur     =  10.0; // seconds
+  private static double RestDur     =  12.0; // seconds
   private static double AlignDur    =  AlignDist    * SecondsPerFoot;
   private static double ApproachDur =  ApproachDist * SecondsPerFoot;
 
