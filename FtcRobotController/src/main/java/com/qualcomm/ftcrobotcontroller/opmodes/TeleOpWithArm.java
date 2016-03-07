@@ -66,7 +66,7 @@ public class TeleOpWithArm extends OpMode {
 
     double left  = -gamepad2.left_stick_y;
     double right = -gamepad2.right_stick_y;
-    double spin  = +gamepad2.right_stick_x;
+    double spin  = gamepad2.left_trigger - gamepad2.right_trigger;
     double Factor = 0.5 / 360.0;
 
     arm.moveShoulder(left * Factor);

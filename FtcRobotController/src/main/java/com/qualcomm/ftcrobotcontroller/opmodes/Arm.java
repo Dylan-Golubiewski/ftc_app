@@ -120,7 +120,7 @@ public class Arm {
   }
 
   public double moveTurret(double rev) {
-    double pos = elbowPosRev + rev;
+    double pos = turretPosRev + rev;
     if (!noLimits)
       pos = Range.clip(pos, -TurretLimit, +TurretLimit);
     rev = pos - turretPosRev;
