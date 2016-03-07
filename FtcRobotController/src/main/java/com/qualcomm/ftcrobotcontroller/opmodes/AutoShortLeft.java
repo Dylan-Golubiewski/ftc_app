@@ -2,16 +2,11 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 public class AutoShortLeft extends OpMode {
 
-  private static double Speed = 0.4;
-  private static double InnerSpeed = Speed * ConfigValues.InsideRatio;
-
-  private static double SecondsPerFoot = 0.5 / Speed;
+  private static double SecondsPerFoot = EncoderWheels.SecondsPerFoot;
 
   private enum State {
     Begin,
@@ -50,95 +45,25 @@ public class AutoShortLeft extends OpMode {
   private DcMotor rearLeftWheel;
   private DcMotor rearRightWheel;
 
+  private EncoderWheels wheels;
+
   private State state = State.Begin;
 
-  private double leftPower  = 0.0;
-  private double rightPower = 0.0;
-
-  private double leftPosFt  = 0.0;
-  private double rightPosFt = 0.0;
-
-  private void setLeftPower(double pwr) {
-    leftPower = Range.clip(pwr,  -1, 1);
-    frontLeftWheel.setPower(leftPower);
-    rearLeftWheel.setPower(leftPower);
-  }
-
-  private void setRightPower(double pwr) {
-    rightPower = Range.clip(pwr,  -1, 1);
-    frontRightWheel.setPower(rightPower);
-    rearRightWheel.setPower(rightPower);
-  }
-
-  private void setPower(double left, double right) {
-    setLeftPower(left);
-    setRightPower(right);
-  }
-
-  private void setWheelMode(DcMotorController.RunMode mode) {
-    frontLeftWheel.setMode(mode);
-    frontRightWheel.setMode(mode);
-    rearLeftWheel.setMode(mode);
-    rearRightWheel.setMode(mode);
-  }
-
-  private static int Clicks(double ft)
-    { return (int)(ft / ConfigValues.FeetPerWheelRev * ConfigValues.ClicksPerRev
-            + 0.5); }
-
-  private void setTarget(double leftFt, double rightFt) {
-    int left  = Clicks(leftFt);
-    int right = Clicks(rightFt);
-    frontLeftWheel.setTargetPosition(left);
-    frontRightWheel.setTargetPosition(right);
-    rearLeftWheel.setTargetPosition(left);
-    rearRightWheel.setTargetPosition(right);
-  }
-
-  private void move(double ft) {
-    leftPosFt  += ft;
-    rightPosFt += ft;
-    setPower(Speed, Speed);
-    setTarget(leftPosFt, rightPosFt);
-  }
-
-  private void turnLeft(double ft) {
-    leftPosFt  += ft * ConfigValues.InsideRatio;
-    rightPosFt += ft;
-    setPower(InnerSpeed, Speed);
-    setTarget(leftPosFt, rightPosFt);
-  }
-
-  private void turnRight(double ft) {
-    leftPosFt  += ft;
-    rightPosFt += ft * ConfigValues.InsideRatio;
-    setPower(Speed, InnerSpeed);
-    setTarget(leftPosFt, rightPosFt);
-  }
-
-  public AutoShortLeft() { }
+  public AutoShortLeft() { wheels = new EncoderWheels(); }
 
   @Override
   public void init() {
     frontLeftWheel  = hardwareMap.dcMotor.get("FrontLeftDrive");
     frontRightWheel = hardwareMap.dcMotor.get("FrontRightDrive");
-    rearLeftWheel  = hardwareMap.dcMotor.get("BackLeftDrive");
-    rearRightWheel = hardwareMap.dcMotor.get("BackRightDrive");
+    rearLeftWheel   = hardwareMap.dcMotor.get("BackLeftDrive");
+    rearRightWheel  = hardwareMap.dcMotor.get("BackRightDrive");
 
-    frontLeftWheel.setDirection(DcMotor.Direction.FORWARD);
-    rearLeftWheel.setDirection(DcMotor.Direction.FORWARD);
-    frontRightWheel.setDirection(DcMotor.Direction.REVERSE);
-    rearRightWheel.setDirection(DcMotor.Direction.REVERSE);
-
-    setWheelMode(DcMotorController.RunMode.RESET_ENCODERS);
+    wheels.init(frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel);
   }
 
   @Override
   public void start() {
-    setPower(0.0, 0.0);
-    setWheelMode(DcMotorController.RunMode.RUN_TO_POSITION);
-    leftPosFt  = 0.0;
-    rightPosFt = 0.0;
+    wheels.start();
     state = State.Begin;
   }
 
@@ -147,37 +72,37 @@ public class AutoShortLeft extends OpMode {
     switch (state) {
       case Begin:
         timer.reset();
-        move(DepartDist);
+        wheels.move(DepartDist);
         state = State.Depart;
         // fall thru
       case Depart:
         if (timer.time() < DepartEnd)
           break;
-        turnLeft(Turn1Dist);
+        wheels.turnLeft(Turn1Dist);
         state = State.Turn1;
         // fall thru
       case Turn1:
         if (timer.time() < Turn1End)
           break;
-        move(StraightDist);
+        wheels.move(StraightDist);
         state = State.Straight;
         // fall thru
       case Straight:
         if (timer.time() < StraightEnd)
           break;
-        turnLeft(Turn2Dist);
+        wheels.turnLeft(Turn2Dist);
         state = State.Turn2;
         // fall thru
       case Turn2:
         if (timer.time() < Turn2End)
           break;
-            move(ApproachDist);
+        wheels.move(ApproachDist);
         state = State.Approach;
         // fall thru
       case Approach:
         if (timer.time() < ApproachEnd)
           break;
-        setPower(0.0, 0.0);
+        wheels.stop();
         state = State.Dock;
         // fall thru
       case Dock:
@@ -185,11 +110,9 @@ public class AutoShortLeft extends OpMode {
     }
 
     telemetry.addData("state", String.format("state: %s", state));
-    telemetry.addData("left",  String.format("%.2f", leftPosFt));
-    telemetry.addData("right", String.format("%.2f", rightPosFt));
   }
 
   @Override
-  public void stop() { setPower(0.0, 0.0); }
+  public void stop() { wheels.stop(); }
 
 } // AutoShortLeft
